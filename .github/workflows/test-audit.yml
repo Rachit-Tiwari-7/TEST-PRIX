@@ -8,7 +8,7 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./ # 💡 Points to the current folder where your dist/index.js is
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
