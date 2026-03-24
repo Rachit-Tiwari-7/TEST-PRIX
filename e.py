@@ -3,6 +3,6 @@ def add_to_inventory(item, inventory=None):
         inventory = []
     inventory.append(item)
     return inventory
-# Consider removing or commenting out these lines if they serve no purpose
+# Add a newline at the end of the file
 # print(add_to_inventory("sword"))
 # print(add_to_inventory("shield"))
