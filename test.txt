@@ -1,0 +1,64 @@
+# 🏎️ PRIX AI Auditor - Testing Guide
+
+Now that the PRIX server is LIVE on Hugging Face, here is how you perform a full end-to-end test.
+
+---
+
+### Step 1: Install the App
+1. Go to your **GitHub App Settings** on your personal account.
+2. Click **Install App** in the sidebar.
+3. Choose a **repository** where you want to test PRIX.
+
+---
+
+### Step 2: Trigger a PR Audit
+PRIX works automatically on `pull_request.opened` and `pull_request.synchronize` events.
+
+1. Create a **new branch** in your repository:
+   `git checkout -b test-prix-audit`
+2. Add a new file with **intentional bugs** (e.g., `buggy.ts`):
+   ```typescript
+   function riskyConcat(arr1: any[], arr2: any[]) {
+     // BUG: No check for null or undefined arrays
+     // BUG: This will throw if arr1 is not an array
+     return arr1.concat(arr2);
+   }
+   ```
+3. **Commit and Push** the branch to GitHub.
+4. Open a **Pull Request** into your `main` branch.
+
+---
+
+### Step 3: Verify the Review
+1. Wait **10-30 seconds**.
+2. Refresh the PR page on GitHub. 
+3. **PRIX Summary**: You should see a high-level table summarizing the changes.
+4. **Line Comments**: PRIX should post comments directly on the `buggy.ts` code, explaining the risks.
+
+---
+
+### Step 4: Test the "Chat" Feature
+PRIX can discuss its findings!
+
+1. Go to one of the **comments** PRIX made.
+2. Click **Reply** and type:
+   `@your-bot-name Can you provide a more optimized version of this fix?`
+3. Wait for the bot to post a follow-up reply.
+
+---
+
+### Step 5: Test the "Remedy PR" (Automatic Fixes)
+If the bug is significant enough:
+1. PRIX will try to fix it automatically in the background.
+2. Check the bottom of the **Audit Summary comment** in your original PR.
+3. It will provide a link to a **generated Remedy Pull Request** if a fix was verified successfully.
+
+---
+
+### 📺 Monitoring (If something fails)
+If you don't see any comments:
+1. Check your **Hugging Face Space Logs**. You will see any errors (like "401 Unauthorized" or "403 Forbidden").
+2. Check your **GitHub App Advanced tab** -> **Recent Deliveries**. Click on the failed delivery to see the server's response code.
+
+---
+🚀 **Happy Auditing!** Let me know if you hit any snags.
