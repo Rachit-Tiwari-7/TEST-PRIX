@@ -1,9 +1,6 @@
 function updateSettings(user, newTheme) {
-    const updatedUser = user;
+    const updatedUser = { ...user }; // Create a shallow copy of the user object
+    updatedUser.settings = { ...updatedUser.settings }; // Create a shallow copy of the settings object
     updatedUser.settings.theme = newTheme;
     return updatedUser;
 }
-
-const account = { id: 1, settings: { theme: 'dark' } };
-const newAccount = updateSettings(account, 'light');
-console.log(account.settings.theme);

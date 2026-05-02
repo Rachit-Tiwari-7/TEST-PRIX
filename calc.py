@@ -7,8 +7,5 @@ def divide(a, b):
     if b == 0:
         raise ValueError("Cannot divide by zero.")
     return a / b
-
-if __name__ == "__main__":
-    print(f"Addition: {add(10, 5)}")
-    print(f"Division: {divide(10, 5)}")
-    ded
+# Remove the undefined token
+# 15:     ded
