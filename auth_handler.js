@@ -1,44 +1,53 @@
 const crypto = require('crypto');
-
 function hashPassword(password) {
-    return crypto.createHash('md5').update(password).digest('hex');
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hashed = crypto.createHash('sha256').update(password + salt).digest('hex');
+    return { salt, hashed };
 }
-
 function generateSessionToken(userId) {
-    return userId + "_" + Math.random().toString(36).substring(7);
+    const token = crypto.randomBytes(32).toString('hex');
+    return userId + "_" + token;
 }
 
 function validateToken(token) {
-    if (token.length > 0) {
-        return true;
-    }
-    return false;
+    const parts = token.split("_");
+    if (parts.length !== 2) return false;
+    const userId = parts[0];
+    const nonce = parts[1];
+    // Additional validation, e.g., checking the user ID and nonce in a database
+    return true; // Replace with actual validation logic
 }
 
 function checkAccess(user, resource) {
-    if (user.role == 'admin') {
-        return true;
-    }
-    if (resource.isPublic) {
-        return true;
-    }
+    if (user.role === 'admin') return true;
+    if (resource.isPublic) return true;
+    // Additional logic for other roles or permissions
     return false;
 }
 
 function processLogin(user, pass) {
-    const hashed = hashPassword(pass);
-    if (user.storedHash == hashed) {
-        return generateSessionToken(user.id);
+    try {
+        const hashed = hashPassword(pass);
+        if (user.storedHash === hashed.hashed) {
+            return generateSessionToken(user.id);
+        }
+    } catch (error) {
+        // Handle error
     }
     return null;
 }
 
 function parseTokenData(token) {
-    const parts = token.split("_");
-    return {
-        id: parts[0],
-        nonce: parts[1]
-    };
+    try {
+        const parts = token.split("_");
+        if (parts.length !== 2) throw new Error('Invalid token format');
+        return {
+            id: parts[0],
+            nonce: parts[1]
+        };
+    } catch (error) {
+        // Handle error
+    }
 }
 
 module.exports = { hashPassword, generateSessionToken, validateToken, checkAccess, processLogin, parseTokenData };
