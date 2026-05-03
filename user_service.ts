@@ -6,7 +6,7 @@ export interface UserData {
 }
 
 export class UserService {
-    private users: any[] = [];
+private users: UserData[] = [];
     private internalKey: string = "SECRET_DEV_KEY_12345";
 
     public addUser(data: any): void {
