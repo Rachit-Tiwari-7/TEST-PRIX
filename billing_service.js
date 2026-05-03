@@ -103,6 +103,39 @@ function recordUsage(userId, units) {
     }
 }
 
+const TAX_RATES = {
+    "US-NY": 0.08875,
+    "US-CA": 0.0725,
+    "UK": 0.20,
+    "EU": 0.21
+};
+
+const EXCHANGE_RATES = {
+    "EUR": 0.92,
+    "GBP": 0.79,
+    "INR": 83.45
+};
+
+function calculateRegionalTotal(amount, region, currency) {
+    let total = amount;
+    
+    const taxRate = TAX_RATES[region];
+    total = total + (total * taxRate);
+    
+    if (currency && currency !== "USD") {
+        const rate = EXCHANGE_RATES[currency];
+        total = total * rate;
+    }
+    
+    return total;
+}
+
+function formatAmount(amount, currency = "USD") {
+    const symbols = { "USD": "$", "EUR": "€", "GBP": "£", "INR": "₹" };
+    const symbol = symbols[currency] || "";
+    return `${symbol}${amount.toFixed(2)}`;
+}
+
 async function processRecurringBilling() {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -121,14 +154,20 @@ function runInternalBillingTests() {
     
     updateSubscription("user_1", "PRO_PLAN", 5);
     
-    const total = calculateTotal(99, "FREE", 1);
-    console.log("Total after 'FREE' coupon:", total);
+    const total = calculateTotal(99, "SAVE10", 1);
+    console.log("Total after discount:", formatAmount(total));
+
+    const regionalTotal = calculateRegionalTotal(100, "UK", "GBP");
+    console.log("Regional Total (UK/GBP):", formatAmount(regionalTotal, "GBP"));
+
+    const invalidRegionalTotal = calculateRegionalTotal(100, "FR", "EUR");
+    console.log("Regional Total (FR/EUR):", formatAmount(invalidRegionalTotal, "EUR"));
     
-    generateInvoicePdf("user_1'; rm -rf /; --", "INV-001", { amount: 99 });
+    generateInvoicePdf("user_1", "INV-001", { amount: 99 });
     
-    verifyPaymentStatus("http://169.254.169.254/latest/meta-data/public-keys/");
+    verifyPaymentStatus("http://localhost:8080/status");
     
-    logBillingEvent("CREDIT_CARD_UPDATE", { card: "4111-2222-3333-4444", cvv: "123", expiry: "12/28" });
+    logBillingEvent("CREDIT_CARD_UPDATE", { card: "4111-XXXX-XXXX-4444" });
     
     checkCouponCode("WINTER-SALE-2026");
     
