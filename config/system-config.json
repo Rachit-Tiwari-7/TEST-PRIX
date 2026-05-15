@@ -1,0 +1,24 @@
+{
+  "system": {
+    "name": "PRIX AI Core",
+    "version": "2.1.0",
+    "environment": "production"
+  },
+  "billing": {
+    "providers": ["stripe", "razorpay"],
+    "retryPolicy": {
+      "maxRetries": 5,
+      "backoff": "exponential"
+    }
+  },
+  "notifications": {
+    "channels": {
+      "email": { "enabled": true, "provider": "sendgrid" },
+      "sms": { "enabled": false, "provider": "twilio" }
+    }
+  },
+  "cache": {
+    "ttl": 3600,
+    "strategy": "lru"
+  }
+}
